@@ -84,7 +84,7 @@
                 }
                 o = JSON.parse(oString);
                 chat.sid = o.sid;
-                io.socket = new WebSocket('ws://' + URLParser.host + '/socket.io/?EIO=3&transport=websocket&sid=' + chat.sid);
+                io.socket = new WebSocket('ws://' + URLParser.host + URLParser.pathname + '/?EIO=3&transport=websocket&sid=' + chat.sid);
                 io.socket.onopen = function() {
                     // Send some magic upgrade command
                     io.socket.send('5');
