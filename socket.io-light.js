@@ -1,3 +1,5 @@
+/* eslint-env browser */
+/* eslint indent: [2, 4] */
 'use strict';
 (function(win) {
     if (typeof win.WebSocket === 'undefined') {
@@ -9,15 +11,20 @@
     function encodeAsString(obj) {
         var str = '';
         str += obj.type;
-        if (null != obj.data) {
+        if (obj.data !== null) {
             str += JSON.stringify(obj.data);
         }
         return '4' + str;
     }
     function decodeString(str) {
-        var p = {}, i = 0;
-        if (typeof str !== 'string') { return; }
-        while (str[i] !== '[' && i < str.length) { i++ }
+        var p = {};
+        var i = 0;
+        if (typeof str !== 'string') {
+            return p;
+        }
+        while (str[i] !== '[' && i < str.length) {
+            i++;
+        }
         try {
             p = JSON.parse(str.substring(i));
         } catch (err) {
@@ -33,14 +40,14 @@
     io.eventListeners = [];
     io.on = function(eventName, callback) {
         io.eventListeners.push({
-            'evtName': eventName,
-            'callback': callback
+            evtName: eventName,
+            callback: callback
         });
     };
     io.eventReceiver = function(evt) {
         for (var i = 0; i < io.eventListeners.length; i++) {
-            if (evt && typeof evt.shift != 'undefined') {
-                if (io.eventListeners[i].evtName == evt[0]) {
+            if (evt && typeof evt.shift !== 'undefined') {
+                if (io.eventListeners[i].evtName === evt[0]) {
                     io.eventListeners[i].callback(evt[1]);
                 }
             }
@@ -57,7 +64,7 @@
                 data
             ]
         };
-        if (io.socket.readyState == io.socket.OPEN) {
+        if (io.socket.readyState === io.socket.OPEN) {
             io.socket.send(encodeAsString(packet));
         }
     };
@@ -69,22 +76,22 @@
         xhr.open('GET', URLParser.protocol + '//' + URLParser.host + URLParser.pathname + '/?EIO=3&transport=polling&t=' + (new Date()).getTime() + '-0', true);
         xhr.responseType = 'arraybuffer';
         xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
+            if (xhr.readyState === 4 && xhr.status === 200) {
                 var ba = new Uint8Array(xhr.response);
                 var oString = '';
                 var o = {};
                 // Skip some bytes until we have a '{'
                 var i = 0;
-                while (String.fromCharCode(ba[i]) != '{' && i < ba.length) {
-                    i++
+                while (String.fromCharCode(ba[i]) !== '{' && i < ba.length) {
+                    i++;
                 }
                 while (i < ba.length) {
                     oString += String.fromCharCode(ba[i]);
                     i++;
                 }
                 o = JSON.parse(oString);
-                chat.sid = o.sid;
-                io.socket = new WebSocket('ws://' + URLParser.host + URLParser.pathname + '/?EIO=3&transport=websocket&sid=' + chat.sid);
+                win.chat.sid = o.sid;
+                io.socket = new WebSocket('ws://' + URLParser.host + URLParser.pathname + '/?EIO=3&transport=websocket&sid=' + win.chat.sid);
                 io.socket.onopen = function() {
                     // Send some magic upgrade command
                     io.socket.send('5');
