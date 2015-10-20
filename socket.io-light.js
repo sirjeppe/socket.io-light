@@ -12,12 +12,14 @@
         if (null != obj.data) {
             str += JSON.stringify(obj.data);
         }
-        return str;
+        return '4' + str;
     }
     function decodeString(str) {
-        var p = {};
+        var p = {}, i = 0;
+        if (typeof str !== 'string') { return; }
+        while (str[i] !== '[' && i < str.length) { i++ }
         try {
-            p = JSON.parse(str);
+            p = JSON.parse(str.substring(i));
         } catch (err) {
             console.log(err);
         }
@@ -37,9 +39,9 @@
     };
     io.eventReceiver = function(evt) {
         for (var i = 0; i < io.eventListeners.length; i++) {
-            if (evt && evt.data && typeof evt.data.shift != 'undefined') {
-                if (io.eventListeners[i].evtName == evt.data[0]) {
-                    io.eventListeners[i].callback(evt.data[1]);
+            if (evt && typeof evt.shift != 'undefined') {
+                if (io.eventListeners[i].evtName == evt[0]) {
+                    io.eventListeners[i].callback(evt[1]);
                 }
             }
         }
@@ -55,7 +57,6 @@
                 data
             ]
         };
-        var msg = '4' + data[0];
         if (io.socket.readyState == io.socket.OPEN) {
             io.socket.send(encodeAsString(packet));
         }
