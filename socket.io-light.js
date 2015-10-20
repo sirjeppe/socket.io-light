@@ -21,6 +21,7 @@
         } catch (err) {
             console.log(err);
         }
+        return p;
     }
     win.io = function(url, callback) {
         return win.io.connect(url, callback);
@@ -29,12 +30,10 @@
     io.socket = null;
     io.eventListeners = [];
     io.on = function(eventName, callback) {
-        io.eventListeners.push(
-            {
-                'evtName': eventName,
-                'callback': callback
-            }
-        );
+        io.eventListeners.push({
+            'evtName': eventName,
+            'callback': callback
+        });
     };
     io.eventReceiver = function(evt) {
         for (var i = 0; i < io.eventListeners.length; i++) {
