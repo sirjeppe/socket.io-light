@@ -10,10 +10,11 @@
     }
     function encodeAsString(obj) {
         var str = '';
-        str += obj.type;
-        if (obj.data !== null) {
-            str += JSON.stringify(obj.data);
+        if (typeof obj !== 'object' || !obj.type || !obj.data || typeof obj.data !== 'object') {
+            return str;
         }
+        str += obj.type;
+        str += JSON.stringify(obj.data);
         return '4' + str;
     }
     function decodeString(str) {
