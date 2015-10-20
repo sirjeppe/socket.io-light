@@ -25,30 +25,30 @@
     win.io = function(url, callback) {
         return win.io.connect(url, callback);
     };
-    var w = win.io;
-    w.socket = null;
-    w.eventListeners = [];
-    w.on = function(eventName, callback) {
-        w.eventListeners.push(
+    var io = win.io;
+    io.socket = null;
+    io.eventListeners = [];
+    io.on = function(eventName, callback) {
+        io.eventListeners.push(
             {
                 'evtName': eventName,
                 'callback': callback
             }
         );
     };
-    w.eventReceiver = function(evt) {
-        for (var i = 0; i < w.eventListeners.length; i++) {
+    io.eventReceiver = function(evt) {
+        for (var i = 0; i < io.eventListeners.length; i++) {
             if (evt && evt.data && typeof evt.data.shift != 'undefined') {
-                if (w.eventListeners[i].evtName == evt.data[0]) {
-                    w.eventListeners[i].callback(evt.data[1]);
+                if (io.eventListeners[i].evtName == evt.data[0]) {
+                    io.eventListeners[i].callback(evt.data[1]);
                 }
             }
         }
     };
-    w.eventDispatcher = function(evt) {
-        w.eventReceiver(decodeString(evt.data));
+    io.eventDispatcher = function(evt) {
+        io.eventReceiver(decodeString(evt.data));
     };
-    w.emit = function(eventName, data) {
+    io.emit = function(eventName, data) {
         var packet = {
             type: 2,
             data: [
@@ -57,11 +57,11 @@
             ]
         };
         var msg = '4' + data[0];
-        if (w.socket.readyState == w.socket.OPEN) {
-            w.socket.send(encodeAsString(packet));
+        if (io.socket.readyState == io.socket.OPEN) {
+            io.socket.send(encodeAsString(packet));
         }
     };
-    w.connect = function(url, callback) {
+    io.connect = function(url, callback) {
         url = typeof url === 'string' ? url : location.protocol + '//' + location.host + '/socket.io';
         var URLParser = document.createElement('a');
         URLParser.href = url;
@@ -84,11 +84,11 @@
                 }
                 o = JSON.parse(oString);
                 chat.sid = o.sid;
-                w.socket = new WebSocket('ws://' + URLParser.host + '/socket.io/?EIO=3&transport=websocket&sid=' + chat.sid);
-                w.socket.onopen = function() {
+                io.socket = new WebSocket('ws://' + URLParser.host + '/socket.io/?EIO=3&transport=websocket&sid=' + chat.sid);
+                io.socket.onopen = function() {
                     // Send some magic upgrade command
-                    w.socket.send('5');
-                    w.socket.onmessage = w.eventDispatcher;
+                    io.socket.send('5');
+                    io.socket.onmessage = io.eventDispatcher;
                     if (typeof callback === 'function') {
                         setTimeout(callback, 0);
                     }
@@ -96,6 +96,6 @@
             }
         };
         xhr.send();
-        return w;
+        return io;
     };
 })(window);
