@@ -1,6 +1,6 @@
 # socket.io-light
-Minimal version of socket.io-client suitable for sending text only (binary
-compat stripped out).
+Minimal socket.io syntax compatible library for sending strings/JSON only
+(binary compat stripped out).
 
 I wanted a very lightweight client-side library compatible with
 socket.io-server/client that easily could be "upgraded" to the full thing if
