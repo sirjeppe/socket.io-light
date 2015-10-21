@@ -20,7 +20,7 @@
     function decodeString(str) {
         var p = {};
         var i = 0;
-        if (typeof str !== 'string') {
+        if (typeof str !== 'string' || str.indexOf('[') < 0) {
             return p;
         }
         while (str[i] !== '[' && i < str.length) {
@@ -69,6 +69,9 @@
             io.socket.send(encodeAsString(packet));
         }
     };
+    io.ping = function() {
+        io.socket.send('4ping');
+    };
     io.connect = function(url, callback) {
         url = typeof url === 'string' ? url : location.protocol + '//' + location.host + '/socket.io';
         var URLParser = document.createElement('a');
@@ -91,8 +94,9 @@
                     i++;
                 }
                 o = JSON.parse(oString);
-                win.chat.sid = o.sid;
-                io.socket = new WebSocket('ws://' + URLParser.host + URLParser.pathname + '/?EIO=3&transport=websocket&sid=' + win.chat.sid);
+                io.sid = o.sid;
+                io.socket = new WebSocket('ws://' + URLParser.host + URLParser.pathname + '/?EIO=3&transport=websocket&sid=' + io.sid);
+                io.socket.pingInterval = setInterval(io.ping, o.pingInterval);
                 io.socket.onopen = function() {
                     // Send some magic upgrade command
                     io.socket.send('5');
